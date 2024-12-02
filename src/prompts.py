@@ -47,7 +47,6 @@ Task:
 - Include a summary of changes and reasoning behind implementation decisions.
 - Follow the project's existing naming conventions, structure, and coding style.
 - Ensure the implementation is efficient and maintainable.
-- Deliverables must be functional, tested, and ready for integration.
 """.strip()
 
 DEBUGGING_PROMPT = """
