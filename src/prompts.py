@@ -47,6 +47,7 @@ Task:
 - Include a summary of changes and reasoning behind implementation decisions.
 - Follow the project's existing naming conventions, structure, and coding style.
 - Ensure the implementation is efficient and maintainable.
+- Retain the original structure and features while integrating new functionality.
 """.strip()
 
 DEBUGGING_PROMPT = """
