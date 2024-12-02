@@ -20,7 +20,7 @@ STANDARD_NOTES = """
 Notes:
 - Respond concisely and directly, avoiding unnecessary polite language.
 - If the provided information is unclear or incomplete, ask for clarification or additional details.
-
+- Make the necessary minimal adjustments while preserving the original structure and logic.
 """.strip()
 
 
