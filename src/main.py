@@ -1,5 +1,7 @@
 import os
-from typing import List
+from typing import List, Dict, Optional
+from pygments.lexers import guess_lexer_for_filename, get_lexer_by_name
+from pygments.util import ClassNotFound
 
 from logging_config import setup_logger
 from src.project_structure import get_tree_structure
@@ -15,6 +17,21 @@ from src.prompts import (
 )
 
 logger = setup_logger(__name__)
+IGNORED_FILE_PATTERNS = [
+    ".git",
+    "__pycache__",
+    ".idea",
+    ".ipynb_checkpoints",
+    ".env",
+    "environment.yml",
+    "final_prompt.md",
+]
+
+IGNORED_DIRECTORIES = [
+    ".git",  # Ignore the entire .git directory
+    "__pycache__",  # Ignore Python cache directories
+    ".idea",  # Ignore IDE project settings
+]
 
 
 def get_user_input(prompt: str) -> str:
@@ -36,6 +53,89 @@ def get_files_from_directory(directory: str) -> List[str]:
         for file in files:
             all_files.append(os.path.join(root, file))
     return all_files
+
+
+def get_code_type_from_extension(file_name: str) -> Optional[str]:
+    """
+    Determines the appropriate code type for a markdown code block based on the file name.
+
+    :param file_name: Name of the file (with extension).
+    :return: Code block type for markdown or None if not detectable.
+    """
+    try:
+        # Attempt to guess the lexer by the file name
+        lexer = guess_lexer_for_filename(file_name, "")
+        return lexer.name.lower().replace(" ", "-")  # Return normalized code type
+    except ClassNotFound:
+        return None
+
+
+def should_ignore_file(file_path: str) -> bool:
+    """
+    Determines whether a file should be ignored based on predefined patterns.
+
+    :param file_path: Full path to the file.
+    :return: True if the file should be ignored, False otherwise.
+    """
+    file_name = os.path.basename(file_path)
+    return any(pattern in file_name for pattern in IGNORED_FILE_PATTERNS)
+
+
+def is_in_ignored_directory(file_path: str) -> bool:
+    """
+    Determines whether a file is inside an ignored directory.
+
+    :param file_path: Full path to the file.
+    :return: True if the file is within an ignored directory, False otherwise.
+    """
+    directory_path = os.path.dirname(file_path)
+    directory_parts = directory_path.split(os.sep)
+    return any(ignored_dir in directory_parts for ignored_dir in IGNORED_DIRECTORIES)
+
+
+def extract_file_content(files: List[str]) -> List[Dict[str, str]]:
+    """
+    Extracts the content of text-based files and formats it as markdown.
+
+    :param files: List of file paths.
+    :return: List of dictionaries containing file metadata and content.
+    """
+    file_data = []
+
+    for file in files:
+        if should_ignore_file(file):
+            logger.info(f"Skipping ignored file: {file}")
+            continue
+
+        if is_in_ignored_directory(file):
+            logger.info(f"Skipping file in ignored directory: {file}")
+            continue
+
+        code_type = None
+        try:
+            # Use Pygments to guess the code type
+            code_type = guess_lexer_for_filename(file, "").name.lower().replace(" ", "-")
+        except ClassNotFound:
+            logger.info(f"No matching lexer found for file: {file}")
+
+        try:
+            with open(file, "r", encoding="utf-8") as f:
+                content = f.read().strip()
+            relative_path = os.path.relpath(file)  # Relative path from the project directory
+            if content:
+                file_data.append(
+                    {
+                        "file_name": relative_path,
+                        "code_type": code_type,
+                        "content": content,
+                    }
+                )
+            else:
+                logger.info(f"File {file} is empty.")
+        except Exception as e:
+            logger.warning(f"Could not read file {file}: {e}")
+
+    return file_data
 
 
 def display_options(options: List[str]) -> None:
@@ -204,6 +304,20 @@ def build_final_prompt(
     return final_prompt
 
 
+def get_all_file_contents(files: List[str]) -> str:
+    file_contents = extract_file_content(files)
+    all_contents_str = ""
+    for file_data in file_contents:
+        all_contents_str += f"\n{file_data['file_name']}\n"
+        if file_data["code_type"]:
+            all_contents_str += f"```{file_data['code_type']}\n"
+        else:
+            all_contents_str += "```\n"
+        all_contents_str += file_data["content"]
+        all_contents_str += "\n```\n"
+    return all_contents_str
+
+
 def main():
     """
     Main function to gather input from the user and generate the final prompt.
@@ -219,6 +333,8 @@ def main():
     files = ask_directory_or_files()
     logger.info(f"Selected Files:\n{files}")
 
+    file_contents = get_all_file_contents(files)
+
     assistance_prompt = ask_assistance_type()
 
     additional_params = ask_prompt_parameters(assistance_prompt)
@@ -226,13 +342,17 @@ def main():
     final_prompt = build_final_prompt(
         role=role,
         project_structure=project_structure,
-        project_files="\n".join(files),
+        project_files=file_contents,
         prompt_template=assistance_prompt,
         additional_params=additional_params,
     )
 
     print("=== Final Prompt ===")
     logger.info(f"Final Prompt: {final_prompt}")
+
+    # save final prompt as markdown file, utf-8 encoded
+    with open("final_prompt.md", "w", encoding="utf-8") as f:
+        f.write(final_prompt)
 
     print("=== Configuration Complete ===")
 
