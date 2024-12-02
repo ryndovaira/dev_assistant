@@ -28,7 +28,7 @@ class LogConfig:
 
 def setup_logger(name=None):
     """
-    Sets up a logger that writes logs to a timestamped file and the console.
+    Sets up a logger that writes logs to a UTF-8 encoded file and the console.
 
     Args:
         name (str): Name of the logger. If None, the root logger is used.
@@ -46,17 +46,21 @@ def setup_logger(name=None):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
-    # File handler
-    file_handler = logging.FileHandler(log_file_path)
+    # File handler with UTF-8 encoding
+    file_handler = logging.FileHandler(log_file_path, encoding="utf-8")
     file_handler.setLevel(logging.INFO)
     file_formatter = logging.Formatter(log_format)
     file_handler.setFormatter(file_formatter)
 
-    # Stream handler for console output
+    # Stream handler for console output with UTF-8 encoding
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
     stream_formatter = logging.Formatter(log_format)
     stream_handler.setFormatter(stream_formatter)
+
+    # Ensure the console stream supports UTF-8 encoding (Python 3.9+)
+    if hasattr(stream_handler.stream, "reconfigure"):
+        stream_handler.stream.reconfigure(encoding="utf-8")
 
     # Avoid adding multiple handlers if the logger is reused
     if not logger.handlers:

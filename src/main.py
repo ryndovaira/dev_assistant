@@ -1,6 +1,8 @@
 import os
 from typing import List
 
+from logging_config import setup_logger
+from src.project_structure import get_tree_structure
 from src.prompts import (
     ASSISTANCE_TYPES,
     ROLES,
@@ -11,8 +13,6 @@ from src.prompts import (
     PROJECT_STRUCTURE_PROMPT,
     ROLE_PROMPT,
 )
-
-from logging_config import setup_logger
 
 logger = setup_logger(__name__)
 
@@ -67,6 +67,22 @@ def ask_assistant_role() -> str:
             print("Invalid input. Please enter a number.")
 
 
+def ask_project_directory() -> str:
+    """
+    Ask the user to provide the project directory path.
+
+    :return: Project structure representation.
+    """
+    while True:
+        directory = get_user_input("Enter the project directory path: ")
+        root_directory = os.path.abspath(directory)
+        if os.path.isdir(directory):
+            tree = get_tree_structure(root_directory)
+            return "\n".join(tree)
+        else:
+            print("Invalid directory. Please try again.")
+
+
 def ask_directory_or_files() -> List[str]:
     """
     Ask the user to provide either a directory path or a list of files.
@@ -83,17 +99,14 @@ def ask_directory_or_files() -> List[str]:
             return get_files_from_directory(directory)
         else:
             print("Invalid directory. Please try again.")
-            return ask_directory_or_files()
     elif choice == "f":
         files = get_user_input("Enter the file paths, separated by commas: ").split(",")
         valid_files = [file.strip() for file in files if os.path.isfile(file.strip())]
         if not valid_files:
             print("No valid files found. Please try again.")
-            return ask_directory_or_files()
         return valid_files
     else:
         print("Invalid choice. Please try again.")
-        return ask_directory_or_files()
 
 
 def ask_assistance_type() -> str:
@@ -200,14 +213,15 @@ def main():
     role = ask_assistant_role()
     logger.info(f"Selected Role: {role}")
 
+    project_structure = ask_project_directory()
+    logger.info(f"Project Structure:\n{project_structure}")
+
     files = ask_directory_or_files()
     logger.info(f"Selected Files:\n{files}")
 
     assistance_prompt = ask_assistance_type()
 
     additional_params = ask_prompt_parameters(assistance_prompt)
-
-    project_structure = "Generated project structure representation for demonstration"
 
     final_prompt = build_final_prompt(
         role=role,
