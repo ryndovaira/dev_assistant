@@ -1,14 +1,14 @@
-ROLE_PROMPT = "Role: You are a professional {role}.".strip()
+ROLE_PROMPT = "You are a professional {role}.".strip()
 
 PROJECT_STRUCTURE_PROMPT = """
 Project structure:
 {project_structure}
-""".strip()
+"""
 
 PROJECT_FILES_PROMPT = """
 Project files:
 {project_files}
-""".strip()
+"""
 
 STANDARD_INFORMATION = """
 {ROLE_PROMPT}
