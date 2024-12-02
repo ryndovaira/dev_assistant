@@ -48,6 +48,8 @@ Task:
 - Follow the project's existing naming conventions, structure, and coding style.
 - Ensure the implementation is efficient and maintainable.
 - Retain the original structure and features while integrating new functionality.
+
+Expected final result: File(s) with the implemented feature that are clear, efficient, and consistent with the project's style and structure.
 """.strip()
 
 DEBUGGING_PROMPT = """
@@ -69,6 +71,8 @@ Task:
 - Clearly explain the cause of the error and the reasoning behind your solution.
 - Follow the project's coding standards and structure when suggesting changes.
 - Ensure the proposed solution is efficient, maintainable, and compatible with the existing project setup.
+
+Expected final result: Resolved error and updated code that is clear, efficient, and consistent with the project's style and structure.
 """.strip()
 README_GENERATION_PROMPT = """
 {STANDARD_INFORMATION}
@@ -89,6 +93,8 @@ Task:
 {STANDARD_NOTES}
 - Follow the project’s style and structure when creating or updating README files.
 - Ensure the README files are helpful, maintainable, and relevant to the target audience.
+
+Expected final result: Updated README files that are clear, informative, and consistent with the project's style and structure.
 """.strip()
 
 ASSISTANCE_TYPES = {
