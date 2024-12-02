@@ -12,6 +12,10 @@ from src.prompts import (
     ROLE_PROMPT,
 )
 
+from logging_config import setup_logger
+
+logger = setup_logger(__name__)
+
 
 def get_user_input(prompt: str) -> str:
     """
@@ -194,10 +198,10 @@ def main():
     print("=== Assistant Configuration ===")
 
     role = ask_assistant_role()
-    print(f"Selected Role: {role}")
+    logger.info(f"Selected Role: {role}")
 
     files = ask_directory_or_files()
-    print(f"Selected Files:\n{files}")
+    logger.info(f"Selected Files:\n{files}")
 
     assistance_prompt = ask_assistance_type()
 
@@ -205,7 +209,6 @@ def main():
 
     project_structure = "Generated project structure representation for demonstration"
 
-    # Generate the final prompt
     final_prompt = build_final_prompt(
         role=role,
         project_structure=project_structure,
@@ -215,7 +218,7 @@ def main():
     )
 
     print("=== Final Prompt ===")
-    print(final_prompt)
+    logger.info(f"Final Prompt: {final_prompt}")
 
     print("=== Configuration Complete ===")
 
