@@ -15,6 +15,7 @@ from src.prompts import (
     PROJECT_STRUCTURE_PROMPT,
     ROLE_PROMPT,
 )
+from src.openai_api_handler import process_and_analyze_file
 
 logger = setup_logger(__name__)
 IGNORED_FILE_PATTERNS = [
@@ -355,6 +356,9 @@ def main():
         f.write(user_context)
 
     print("=== Configuration Complete ===")
+
+    chatgpt_result = process_and_analyze_file(system_contex, user_context)
+    print(chatgpt_result)
 
 
 if __name__ == "__main__":
