@@ -8,6 +8,7 @@ from config import (
     OPENAI_MAX_TOKENS,
     USE_REAL_OPENAI_API,
     DUMMY_RESPONSE,
+    LOG_OPENAI_RESPONSE_DIR,
 )
 from logging_config import setup_logger
 from src.openai_token_count_and_cost import calculate_token_count, calculate_price
@@ -39,7 +40,9 @@ def estimate_costs(token_count: int, model: str, input_tokens: bool, comment: st
 def log_and_save_response(response: str):
     """Log and save API response to a file with error handling."""
     logger.info(f"OpenAI response: {response}")
-    file_name = f"openai_response_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    file_name = (
+        LOG_OPENAI_RESPONSE_DIR / f"openai_response_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    )
     try:
         with open(file_name, "w", encoding="utf-8") as file:
             file.write(response)
