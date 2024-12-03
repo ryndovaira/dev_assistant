@@ -264,7 +264,7 @@ def build_final_prompt(
     project_files: str,
     prompt_template: str,
     additional_params: dict,
-) -> str:
+) -> list[str, str]:
     """
     Build the final prompt by incorporating the role, project structure, and files into the standardized sections,
     and appending the specific prompt template populated with additional parameters.
@@ -284,7 +284,6 @@ def build_final_prompt(
     project_files_prompt_filled = PROJECT_FILES_PROMPT.format(project_files=project_files)
 
     standard_info_filled = STANDARD_INFORMATION.format(
-        ROLE_PROMPT=role_prompt_filled,
         PROJECT_STRUCTURE_PROMPT=project_structure_prompt_filled,
         PROJECT_FILES_PROMPT=project_files_prompt_filled,
         STANDARD_NOTES=STANDARD_NOTES,
@@ -301,7 +300,7 @@ def build_final_prompt(
     # Fill the assistance-specific prompt
     final_prompt = prompt_template.format(**combined_context)
 
-    return final_prompt
+    return role_prompt_filled, final_prompt
 
 
 def get_all_file_contents(files: List[str]) -> str:
@@ -339,7 +338,7 @@ def main():
 
     additional_params = ask_prompt_parameters(assistance_prompt)
 
-    final_prompt = build_final_prompt(
+    system_contex, user_context = build_final_prompt(
         role=role,
         project_structure=project_structure,
         project_files=file_contents,
@@ -347,12 +346,13 @@ def main():
         additional_params=additional_params,
     )
 
-    print("=== Final Prompt ===")
-    logger.info(f"Final Prompt: {final_prompt}")
+    logger.info(f"System Context:\n{system_contex}")
+    logger.info(f"User Context:\n{user_context}")
 
     # save final prompt as markdown file, utf-8 encoded
     with open("final_prompt.md", "w", encoding="utf-8") as f:
-        f.write(final_prompt)
+        f.write(system_contex)
+        f.write(user_context)
 
     print("=== Configuration Complete ===")
 
