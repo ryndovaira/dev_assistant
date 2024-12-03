@@ -1,6 +1,7 @@
 from datetime import datetime
-from pathlib import Path
-from logging_config import setup_logger
+
+from openai import OpenAI
+
 from config import (
     OPENAI_API_KEY,
     OPENAI_PROJECT_ID,
@@ -10,14 +11,10 @@ from config import (
     USE_REAL_OPENAI_API,
     DUMMY_RESPONSE,
 )
-from openai import OpenAI
-
+from logging_config import setup_logger
 from src.openai_token_count_and_cost import calculate_token_count, calculate_price
 
 logger = setup_logger(__name__)
-
-# Supported file types for validation
-SUPPORTED_FILE_TYPES = [".zip"]
 
 
 # Dependency injection for OpenAI client
