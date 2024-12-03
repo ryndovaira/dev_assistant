@@ -1,6 +1,6 @@
 from datetime import datetime
 from openai import OpenAI
-from config import (
+from src.config import (
     OPENAI_API_KEY,
     OPENAI_PROJECT_ID,
     OPENAI_MODEL,
@@ -10,7 +10,7 @@ from config import (
     DUMMY_RESPONSE,
     LOG_OPENAI_RESPONSE_DIR,
 )
-from logging_config import setup_logger
+from src.logging_config import setup_logger
 from src.openai_token_count_and_cost import calculate_token_count, calculate_price
 
 logger = setup_logger(__name__)

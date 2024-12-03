@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from config import LOG_DIR
+from src.config import LOG_DIR
 
 
 class LogConfig:
