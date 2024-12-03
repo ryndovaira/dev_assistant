@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -34,6 +36,11 @@ def get_env_var(name, cast=None, required=True, error_message=None):
     return value
 
 
+def create_dir_if_not_exist(path):
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
 # Required OpenAI API credentials
 OPENAI_API_KEY = get_env_var("OPENAI_API_KEY", required=True)
 OPENAI_PROJECT_ID = get_env_var("OPENAI_PROJECT_ID", required=True)
@@ -59,3 +66,10 @@ USE_REAL_OPENAI_API = (
 
 # Dummy response for testing
 DUMMY_RESPONSE = "This is a dummy response for testing purposes."
+
+LOG_OPENAI_RESPONSE_DIR = create_dir_if_not_exist(
+    Path(__file__).resolve().parents[1] / get_env_var("LOG_OPENAI_RESPONSE_DIR", required=True)
+)
+LOG_DIR = create_dir_if_not_exist(
+    Path(__file__).resolve().parents[1] / get_env_var("LOG_DIR", required=True)
+)

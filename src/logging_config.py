@@ -1,18 +1,13 @@
 import logging
-from pathlib import Path
 from datetime import datetime
+
+from config import LOG_DIR
 
 
 class LogConfig:
     """
     Configuration for logging, including log directory, file naming, and format.
     """
-
-    # Define the log directory outside the src directory, at the project root
-    LOG_DIR = (
-        Path(__file__).resolve().parents[2] / "logs"
-    )  # Adjust path relative to the project root
-    LOG_DIR.mkdir(exist_ok=True)  # Ensure the directory exists
 
     # Define a consistent timestamp for the log file
     TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -23,7 +18,7 @@ class LogConfig:
         """
         Returns the full path to the log file for the current application run.
         """
-        return cls.LOG_DIR / f"log_{cls.TIMESTAMP}.log"
+        return LOG_DIR / f"log_{cls.TIMESTAMP}.log"
 
 
 def setup_logger(name=None):
