@@ -49,6 +49,8 @@ def get_files_from_directory(directory: str) -> List[str]:
     :param directory: The directory path to scan.
     :return: A list of file paths.
     """
+
+    # TODO: Glob
     all_files = []
     for root, _, files in os.walk(directory):
         for file in files:
