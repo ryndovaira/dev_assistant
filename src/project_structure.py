@@ -19,7 +19,28 @@ def generate_tree_structure(directory, prefix=""):
     for index, entry in enumerate(entries):
         entry_path = os.path.join(directory, entry)
         connector = "└── " if index == len(entries) - 1 else "├── "
-        if os.path.isfile(entry_path):
+
+        if os.path.isfile(entry_path) and not entry.endswith(
+                (
+                        ".html",
+                        ".env",
+                        ".log",
+                        ".csv",
+                        ".json",
+                        ".keras",
+                        ".h5",
+                        ".png",
+                        ".jpg",
+                        ".jpeg",
+                        ".gif",
+                        ".svg",
+                        ".pdf",
+                        ".docx",
+                        ".pptx",
+                        ".xlsx",
+                        ".ipynb",
+                )
+        ):
             tree.append(f"{prefix}{connector}{entry}")
         elif os.path.isdir(entry_path) and not entry.startswith(
             (".", "__pycache__", ".git", ".idea", ".ipynb_checkpoints")
